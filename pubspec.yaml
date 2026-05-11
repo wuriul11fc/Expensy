@@ -11,16 +11,16 @@ dependencies:
     sdk: flutter
   sqflite: ^2.4.4
   path_provider: ^2.6.0
-  intl: ^0.19.0                     # intl 0.20 requires Dart 3.5, stick with 0.19
-  fl_chart: ^1.3.0
+  intl: ^0.19.0
+  fl_chart: ^0.68.0
   google_ml_kit: ^0.21.0
   image_picker: ^1.2.0
   receipt_recognition: ^0.2.8
-  shared_preferences: ^2.5.3       # major version 13 requires Dart 3.5, use 2.x
+  shared_preferences: ^2.5.3
   provider: ^6.1.4
   uuid: ^4.5.1
   path: ^1.9.1
-  share_plus: ^9.0.0               # major version 13 requires Dart 3.5, use 9.x
+  share_plus: ^9.0.0
   csv: ^6.0.0
   file_picker: ^10.3.10
 
