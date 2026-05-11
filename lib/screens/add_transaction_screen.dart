@@ -110,7 +110,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
     final currency = app.settings.currency;
     final sym = currencyInfo(currency).symbol;
 
-    return Scaffold(
+       return Scaffold(
       appBar: AppBar(
         title: Text(isEdit ? 'Edit Transaction' : 'Add Transaction',
             style: const TextStyle(fontWeight: FontWeight.w800)),
@@ -376,6 +376,13 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
           ],
         ),
       ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () async {
+          final result = await ReceiptRecognizer().processImageFromCamera();
+          if (result != null && mounted) {
+            _amountCtrl.text = result.totalAmount.toString();
+          }
+        },
+        child: const Icon(Icons.receipt),
+      ),
     );
-  }
-}
