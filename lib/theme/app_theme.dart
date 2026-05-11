@@ -133,6 +133,7 @@ const List<CurrencyInfo> kCurrencies = [
   CurrencyInfo('AED', 'د.إ', 'UAE Dirham'),
   CurrencyInfo('JPY', '¥',   'Japanese Yen'),
   CurrencyInfo('CAD', 'C\$', 'Canadian Dollar'),
+  CurrencyInfo('MYR', 'RM',  'Malaysian Ringgit'),
 ];
 
 CurrencyInfo currencyInfo(String code) =>

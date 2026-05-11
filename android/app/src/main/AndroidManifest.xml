@@ -6,10 +6,15 @@
         android:maxSdkVersion="32" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"
         android:maxSdkVersion="29" />
-
+    
+    <!-- Internet Permission -->
+    <uses-permission android:name="android.permission.INTERNET"/>
+    
     <!-- Media permissions for Android 13+ -->
     <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
-
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-feature android:name="android.hardware.camera" android:required="false" />
+   
     <!-- Push notification permissions -->
     <!-- Required for Android 13+ (API 33+) -->
     <!-- Schedule exact alarms for precise notification timing (Android 12+) -->

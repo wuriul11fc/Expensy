@@ -5,6 +5,7 @@ import '../providers/app_provider.dart';
 import '../models/models.dart';
 import '../theme/app_theme.dart';
 import '../widgets/shared_widgets.dart';
+import 'package:receipt_recognition/receipt_recognition.dart';
 
 class AddTransactionScreen extends StatefulWidget {
   final Transaction? existing;
