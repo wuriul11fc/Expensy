@@ -6,6 +6,7 @@ import '../providers/app_provider.dart';
 import '../database/db_helper.dart';
 import '../models/models.dart';
 import '../theme/app_theme.dart';
+import '../widgets/shared_widgets.dart'; // ← ADD THIS IMPORT
 
 class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({super.key});
@@ -125,7 +126,6 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     );
   }
 
-  // ── Step 0: Welcome ──────────────────────────────────────────────────────
   Widget _buildWelcome(ColorScheme cs) {
     return Column(
       key: const ValueKey(0),
@@ -149,7 +149,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         Text(
           'Your privacy-first expense manager\nNo internet permission needed',
           style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: cs.onSurface.withValues(alpha: 0.6),
+                color: cs.onSurface.withAlpha(150),
               ),
           textAlign: TextAlign.center,
         ),
@@ -162,7 +162,6 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     );
   }
 
-  // ── Step 1: Name ────────────────────────────────────────────────────────
   Widget _buildName(ColorScheme cs) {
     return Column(
       key: const ValueKey(1),
@@ -193,7 +192,6 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     );
   }
 
-  // ── Step 2: Currency ────────────────────────────────────────────────────
   Widget _buildCurrency(ColorScheme cs) {
     return Column(
       key: const ValueKey(2),
@@ -230,7 +228,6 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     );
   }
 
-  // ── Step 3: Add Accounts ────────────────────────────────────────────────
   Widget _buildAccounts(ColorScheme cs) {
     return Column(
       key: const ValueKey(3),
@@ -247,12 +244,11 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         Text(
           'You can add more later',
           style: TextStyle(
-            color: cs.onSurface.withValues(alpha: 0.6),
+            color: cs.onSurface.withAlpha(150),
             fontSize: 12,
           ),
         ),
         const SizedBox(height: 20),
-        // Account list preview
         if (_accounts.isNotEmpty) ...[
           Container(
             decoration: BoxDecoration(
@@ -274,7 +270,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     width: 32,
                     height: 32,
                     decoration: BoxDecoration(
-                      color: Color(a.colorValue).withValues(alpha: 0.15),
+                      color: Color(a.colorValue).withAlpha(38),
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Center(
@@ -297,7 +293,6 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           ),
           const SizedBox(height: 16),
         ],
-        // Add account form
         Card(
           elevation: 0,
           shape: RoundedRectangleBorder(
