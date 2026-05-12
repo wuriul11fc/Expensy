@@ -9,6 +9,7 @@ import '../theme/app_theme.dart';
 
 class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({super.key});
+
   @override
   State<OnboardingScreen> createState() => _OnboardingScreenState();
 }
@@ -16,15 +17,13 @@ class OnboardingScreen extends StatefulWidget {
 class _OnboardingScreenState extends State<OnboardingScreen> {
   final _uuid = const Uuid();
   int _step = 0;
-
-  final _nameCtrl   = TextEditingController();
-  String _currency  = 'EGP';
-
-  final List<Account> _accounts  = [];
+  final _nameCtrl = TextEditingController();
+  String _currency = 'EGP';
+  final List<Account> _accounts = [];
   final _accNameCtrl = TextEditingController();
-  String _accType    = 'bank';
-  final _accBalCtrl  = TextEditingController(text: '0');
-  int _accColor      = 0xFF6750A4;
+  String _accType = 'bank';
+  final _accBalCtrl = TextEditingController(text: '0');
+  int _accColor = 0xFF6750A4;
 
   static const List<int> _colors = [
     0xFF6750A4, 0xFF7D5260, 0xFF1565C0,
@@ -40,28 +39,26 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   }
 
   Future<void> _finish() async {
-    // Capture provider before any awaits to avoid async context issues
-    final app  = context.read<AppProvider>();
-    final name = _nameCtrl.text.trim().isEmpty
-        ? 'Friend'
-        : _nameCtrl.text.trim();
+    final app = Provider.of<AppProvider>(context, listen: false);
+    final name = _nameCtrl.text.trim().isEmpty ? 'Friend' : _nameCtrl.text.trim();
 
-    final accs = _accounts.isEmpty
+    final accountsToInsert = _accounts.isEmpty
         ? [
             Account(
-              id:         _uuid.v4(),
-              name:       'Main Account',
-              type:       'bank',
-              balance:    0,
-              currency:   _currency,
+              id: _uuid.v4(),
+              name: 'Main Account',
+              type: 'bank',
+              balance: 0,
+              currency: _currency,
               colorValue: 0xFF6750A4,
             )
           ]
-        : List<Account>.from(_accounts);
+        : List.from(_accounts);
 
-    for (final a in accs) {
+    for (final a in accountsToInsert) {
       await DBHelper.insertAccount(a);
     }
+
     await app.completeOnboarding(name: name, currency: _currency);
   }
 
@@ -70,11 +67,11 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     if (name.isEmpty) return;
     setState(() {
       _accounts.add(Account(
-        id:         _uuid.v4(),
-        name:       name,
-        type:       _accType,
-        balance:    double.tryParse(_accBalCtrl.text) ?? 0,
-        currency:   _currency,
+        id: _uuid.v4(),
+        name: name,
+        type: _accType,
+        balance: double.tryParse(_accBalCtrl.text) ?? 0,
+        currency: _currency,
         colorValue: _accColor,
       ));
       _accNameCtrl.clear();
@@ -100,9 +97,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                       height: 6,
                       margin: const EdgeInsets.symmetric(horizontal: 3),
                       decoration: BoxDecoration(
-                        color: i <= _step
-                            ? cs.primary
-                            : cs.surfaceContainerHighest,
+                        color: i <= _step ? cs.primary : cs.surfaceContainerHighest,
                         borderRadius: BorderRadius.circular(3),
                       ),
                     ),
@@ -145,259 +140,235 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         const SizedBox(height: 32),
         Text(
           'Welcome to Expensy',
-          style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                fontWeight: FontWeight.w800),
+          style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                fontWeight: FontWeight.w800,
+              ),
           textAlign: TextAlign.center,
         ),
-        const SizedBox(height: 14),
+        const SizedBox(height: 16),
         Text(
-          'Track expenses, manage accounts,\nand reach your financial goals — fully offline.',
+          'Your privacy-first expense manager\nNo internet permission needed',
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                color: cs.onSurface.withValues(alpha: 0.6),
+              ),
           textAlign: TextAlign.center,
-          style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                color: cs.onSurface.withValues(alpha: 0.65),
-                height: 1.6),
         ),
         const SizedBox(height: 48),
-        _nextBtn('Get Started', () => setState(() => _step = 1), cs),
+        FilledButton(
+          onPressed: () => setState(() => _step = 1),
+          child: const Text('Get Started'),
+        ),
       ],
     );
   }
 
-  // ── Step 1: Name ─────────────────────────────────────────────────────────
+  // ── Step 1: Name ────────────────────────────────────────────────────────
   Widget _buildName(ColorScheme cs) {
     return Column(
       key: const ValueKey(1),
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const SizedBox(height: 20),
-        Text("What's your name?",
-            style: Theme.of(context)
-                .textTheme
-                .headlineSmall
-                ?.copyWith(fontWeight: FontWeight.w800)),
-        const SizedBox(height: 8),
-        Text('So we can personalise your experience',
-            style: Theme.of(context)
-                .textTheme
-                .bodyMedium
-                ?.copyWith(color: cs.onSurface.withValues(alpha: 0.6))),
-        const SizedBox(height: 32),
+        Text(
+          'What should we call you?',
+          style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                fontWeight: FontWeight.w800,
+              ),
+        ),
+        const SizedBox(height: 16),
         TextField(
           controller: _nameCtrl,
-          autofocus: true,
-          textCapitalization: TextCapitalization.words,
           decoration: const InputDecoration(
             labelText: 'Your name',
-            prefixIcon: Icon(Icons.person_outline_rounded),
+            prefixIcon: Icon(Icons.person_outline),
           ),
-          onSubmitted: (_) => setState(() => _step = 2),
+          autofocus: true,
         ),
         const SizedBox(height: 32),
-        _nextBtn('Continue', () => setState(() => _step = 2), cs),
+        FilledButton(
+          onPressed: () => setState(() => _step = 2),
+          child: const Text('Next'),
+        ),
       ],
     );
   }
 
-  // ── Step 2: Currency ─────────────────────────────────────────────────────
+  // ── Step 2: Currency ────────────────────────────────────────────────────
   Widget _buildCurrency(ColorScheme cs) {
     return Column(
       key: const ValueKey(2),
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const SizedBox(height: 20),
-        Text('Choose your currency',
-            style: Theme.of(context)
-                .textTheme
-                .headlineSmall
-                ?.copyWith(fontWeight: FontWeight.w800)),
-        const SizedBox(height: 8),
-        Text('Default for all your accounts',
-            style: Theme.of(context)
-                .textTheme
-                .bodyMedium
-                ?.copyWith(color: cs.onSurface.withValues(alpha: 0.6))),
-        const SizedBox(height: 24),
-        GridView.count(
-          crossAxisCount: 2,
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          mainAxisSpacing: 12,
-          crossAxisSpacing: 12,
-          childAspectRatio: 1.6,
-          children: kCurrencies.map((c) {
-            final sel = _currency == c.code;
-            return GestureDetector(
-              onTap: () => setState(() => _currency = c.code),
-              child: AnimatedContainer(
-                duration: const Duration(milliseconds: 200),
-                decoration: BoxDecoration(
-                  color: sel ? cs.primary : cs.surfaceContainerLow,
-                  borderRadius: BorderRadius.circular(16),
-                  border: Border.all(
-                    color: sel ? cs.primary : cs.outlineVariant,
-                    width: 2,
-                  ),
-                ),
-                padding: const EdgeInsets.all(14),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      c.symbol,
-                      style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.w800,
-                          color: sel ? cs.onPrimary : cs.primary),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(c.code,
-                        style: TextStyle(
-                            fontWeight: FontWeight.w700,
-                            color: sel ? cs.onPrimary : cs.onSurface)),
-                    Text(c.name,
-                        style: TextStyle(
-                            fontSize: 10,
-                            color: sel
-                                ? cs.onPrimary.withValues(alpha: 0.7)
-                                : cs.onSurface.withValues(alpha: 0.55))),
-                  ],
-                ),
+        Text(
+          'Choose your currency',
+          style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                fontWeight: FontWeight.w800,
               ),
+        ),
+        const SizedBox(height: 16),
+        DropdownButtonFormField<String>(
+          value: _currency,
+          decoration: const InputDecoration(
+            labelText: 'Currency',
+            prefixIcon: Icon(Icons.monetization_on_outlined),
+          ),
+          items: kCurrencies.map((cur) {
+            return DropdownMenuItem<String>(
+              value: cur.code,
+              child: Text('${cur.code}  ${cur.symbol}  — ${cur.name}'),
             );
           }).toList(),
+          onChanged: (v) => setState(() => _currency = v!),
         ),
         const SizedBox(height: 32),
-        _nextBtn('Continue', () => setState(() => _step = 3), cs),
+        FilledButton(
+          onPressed: () => setState(() => _step = 3),
+          child: const Text('Next'),
+        ),
       ],
     );
   }
 
-  // ── Step 3: Accounts ─────────────────────────────────────────────────────
+  // ── Step 3: Add Accounts ────────────────────────────────────────────────
   Widget _buildAccounts(ColorScheme cs) {
-    final sym = currencyInfo(_currency).symbol;
     return Column(
       key: const ValueKey(3),
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const SizedBox(height: 20),
-        Text('Set up your accounts',
-            style: Theme.of(context)
-                .textTheme
-                .headlineSmall
-                ?.copyWith(fontWeight: FontWeight.w800)),
-        const SizedBox(height: 8),
-        Text('Add your bank, cash, savings accounts',
-            style: Theme.of(context)
-                .textTheme
-                .bodyMedium
-                ?.copyWith(color: cs.onSurface.withValues(alpha: 0.6))),
-        const SizedBox(height: 20),
-
-        // Already-added accounts
-        ..._accounts.map((a) => Card(
-              color: cs.surfaceContainerLow,
-              margin: const EdgeInsets.only(bottom: 8),
-              child: ListTile(
-                leading: CircleAvatar(
-                  backgroundColor: Color(a.colorValue),
-                  child: Icon(Icons.account_balance_outlined,
-                      color: Colors.white, size: 18),
-                ),
-                title: Text(a.name,
-                    style: const TextStyle(fontWeight: FontWeight.w600)),
-                subtitle:
-                    Text('$sym${a.balance.toStringAsFixed(2)} · ${a.type}'),
-                trailing: IconButton(
-                  icon: const Icon(Icons.close),
-                  onPressed: () => setState(
-                      () => _accounts.removeWhere((x) => x.id == a.id)),
-                ),
+        Text(
+          'Add your accounts',
+          style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                fontWeight: FontWeight.w800,
               ),
-            )),
-
+        ),
         const SizedBox(height: 8),
-
+        Text(
+          'You can add more later',
+          style: TextStyle(
+            color: cs.onSurface.withValues(alpha: 0.6),
+            fontSize: 12,
+          ),
+        ),
+        const SizedBox(height: 20),
+        // Account list preview
+        if (_accounts.isNotEmpty) ...[
+          Container(
+            decoration: BoxDecoration(
+              border: Border.all(color: cs.outlineVariant),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: ListView.separated(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: _accounts.length,
+              separatorBuilder: (_, __) => Divider(
+                height: 0,
+                color: cs.outlineVariant,
+              ),
+              itemBuilder: (_, i) {
+                final a = _accounts[i];
+                return ListTile(
+                  leading: Container(
+                    width: 32,
+                    height: 32,
+                    decoration: BoxDecoration(
+                      color: Color(a.colorValue).withValues(alpha: 0.15),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Center(
+                      child: AccountTypeIcon(type: a.type, size: 16),
+                    ),
+                  ),
+                  title: Text(a.name),
+                  subtitle: Text(formatAmount(a.balance, a.currency)),
+                  trailing: IconButton(
+                    icon: const Icon(Icons.delete_outline, size: 20),
+                    onPressed: () {
+                      setState(() {
+                        _accounts.removeAt(i);
+                      });
+                    },
+                  ),
+                );
+              },
+            ),
+          ),
+          const SizedBox(height: 16),
+        ],
         // Add account form
         Card(
-          color: cs.surfaceContainerLow,
+          elevation: 0,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+            side: BorderSide(color: cs.outlineVariant),
+          ),
           child: Padding(
             padding: const EdgeInsets.all(16),
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('Add Account',
-                    style: Theme.of(context)
-                        .textTheme
-                        .titleSmall
-                        ?.copyWith(fontWeight: FontWeight.w700)),
-                const SizedBox(height: 12),
                 TextField(
                   controller: _accNameCtrl,
-                  textCapitalization: TextCapitalization.words,
                   decoration: const InputDecoration(
-                    labelText: 'Account Name',
-                    prefixIcon: Icon(Icons.account_balance_outlined),
+                    labelText: 'Account name',
                     isDense: true,
                   ),
                 ),
-                const SizedBox(height: 10),
+                const SizedBox(height: 12),
                 DropdownButtonFormField<String>(
-                  initialValue: _accType,
+                  value: _accType,
                   decoration: const InputDecoration(
-                      labelText: 'Type', isDense: true),
+                    labelText: 'Type',
+                    isDense: true,
+                  ),
                   items: const [
-                    DropdownMenuItem(value: 'bank',    child: Text('Bank Account')),
-                    DropdownMenuItem(value: 'cash',    child: Text('Cash')),
+                    DropdownMenuItem(value: 'bank', child: Text('Bank Account')),
+                    DropdownMenuItem(value: 'cash', child: Text('Cash')),
                     DropdownMenuItem(value: 'savings', child: Text('Savings')),
-                    DropdownMenuItem(value: 'credit',  child: Text('Credit Card')),
-                    DropdownMenuItem(value: 'wallet',  child: Text('E-Wallet')),
+                    DropdownMenuItem(value: 'credit', child: Text('Credit Card')),
+                    DropdownMenuItem(value: 'wallet', child: Text('E-Wallet')),
                   ],
                   onChanged: (v) => setState(() => _accType = v!),
                 ),
-                const SizedBox(height: 10),
+                const SizedBox(height: 12),
                 TextField(
                   controller: _accBalCtrl,
-                  keyboardType:
-                      const TextInputType.numberWithOptions(decimal: true),
+                  keyboardType: const TextInputType.numberWithOptions(decimal: true),
                   decoration: InputDecoration(
-                    labelText: 'Initial Balance',
-                    prefixText: '$sym ',
+                    labelText: 'Balance',
                     isDense: true,
+                    prefixText: '${currencyInfo(_currency).symbol} ',
                   ),
                 ),
                 const SizedBox(height: 12),
-                // Colour picker
-                Row(children: [
-                  Text('Colour:',
-                      style: Theme.of(context).textTheme.bodySmall),
-                  const SizedBox(width: 10),
-                  ..._colors.map((c) => GestureDetector(
-                        onTap: () => setState(() => _accColor = c),
-                        child: AnimatedContainer(
-                          duration: const Duration(milliseconds: 150),
-                          width: 26,
-                          height: 26,
-                          margin: const EdgeInsets.only(right: 8),
-                          decoration: BoxDecoration(
-                            color: Color(c),
-                            shape: BoxShape.circle,
-                            border: Border.all(
-                              color: _accColor == c
-                                  ? cs.onSurface
-                                  : Colors.transparent,
-                              width: 3,
-                            ),
+                Wrap(
+                  spacing: 12,
+                  children: _colors.map((col) {
+                    return GestureDetector(
+                      onTap: () => setState(() => _accColor = col),
+                      child: Container(
+                        width: 36,
+                        height: 36,
+                        decoration: BoxDecoration(
+                          color: Color(col),
+                          shape: BoxShape.circle,
+                          border: Border.all(
+                            color: _accColor == col ? Colors.white : Colors.transparent,
+                            width: 2,
                           ),
                         ),
-                      )),
-                ]),
-                const SizedBox(height: 14),
-                OutlinedButton.icon(
-                  onPressed: _addAccount,
-                  icon: const Icon(Icons.add, size: 18),
-                  label: const Text('Add Account'),
-                  style: OutlinedButton.styleFrom(
-                    minimumSize: const Size.fromHeight(42),
+                      ),
+                    );
+                  }).toList(),
+                ),
+                const SizedBox(height: 12),
+                SizedBox(
+                  width: double.infinity,
+                  child: FilledButton.icon(
+                    onPressed: _addAccount,
+                    icon: const Icon(Icons.add),
+                    label: const Text('Add Account'),
                   ),
                 ),
               ],
@@ -405,33 +376,24 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           ),
         ),
         const SizedBox(height: 24),
-
-        FilledButton(
-          onPressed: _finish,
-          style: FilledButton.styleFrom(
-            minimumSize: const Size.fromHeight(52),
-            shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(28)),
-          ),
-          child: Text(
-            _accounts.isEmpty
-                ? 'Skip & Use Default Account'
-                : 'Enter Expensy →',
-            style: const TextStyle(fontSize: 16),
-          ),
+        Row(
+          children: [
+            Expanded(
+              child: OutlinedButton(
+                onPressed: _step > 0 ? () => setState(() => _step--) : null,
+                child: const Text('Back'),
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: FilledButton(
+                onPressed: _finish,
+                child: const Text('Finish'),
+              ),
+            ),
+          ],
         ),
       ],
-    );
-  }
-
-  Widget _nextBtn(String label, VoidCallback onTap, ColorScheme cs) {
-    return FilledButton(
-      onPressed: onTap,
-      style: FilledButton.styleFrom(
-        minimumSize: const Size.fromHeight(52),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28)),
-      ),
-      child: Text(label, style: const TextStyle(fontSize: 16)),
     );
   }
 }
