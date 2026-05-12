@@ -17,7 +17,6 @@ class RecurringScreen extends StatelessWidget {
     final currency = app.settings.currency;
     String fmt(double v) => formatAmount(v, currency);
 
-    // Estimated monthly cost across all recurring payments
     double estMonthly = 0;
     for (final r in app.recurring) {
       switch (r.freqUnit) {
@@ -44,7 +43,6 @@ class RecurringScreen extends StatelessWidget {
       ),
       body: Column(
         children: [
-          // ── Monthly / Weekly summary cards — below AppBar, outside it ──
           Padding(
             padding: const EdgeInsets.fromLTRB(14, 12, 14, 0),
             child: Row(children: [
@@ -58,11 +56,9 @@ class RecurringScreen extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('Monthly',
-                          style: TextStyle(fontSize: 11, color: cs.onPrimaryContainer.withValues(alpha: 0.65), fontWeight: FontWeight.w600)),
+                      Text('Monthly', style: TextStyle(fontSize: 11, color: cs.onPrimaryContainer.withAlpha(165), fontWeight: FontWeight.w600)),
                       const SizedBox(height: 2),
-                      Text(fmt(estMonthly),
-                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: cs.primary)),
+                      Text(fmt(estMonthly), style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: cs.primary)),
                     ],
                   ),
                 ),
@@ -78,11 +74,9 @@ class RecurringScreen extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('Weekly',
-                          style: TextStyle(fontSize: 11, color: cs.onSecondaryContainer.withValues(alpha: 0.65), fontWeight: FontWeight.w600)),
+                      Text('Weekly', style: TextStyle(fontSize: 11, color: cs.onSecondaryContainer.withAlpha(165), fontWeight: FontWeight.w600)),
                       const SizedBox(height: 2),
-                      Text(fmt(estMonthly / 4.33),
-                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: cs.secondary)),
+                      Text(fmt(estMonthly / 4.33), style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: cs.secondary)),
                     ],
                   ),
                 ),
@@ -90,7 +84,6 @@ class RecurringScreen extends StatelessWidget {
             ]),
           ),
           const SizedBox(height: 10),
-          // ── Payment list ───────────────────────────────────────────────
           Expanded(
             child: app.recurring.isEmpty
                 ? const EmptyState(
@@ -118,9 +111,7 @@ class RecurringScreen extends StatelessWidget {
       context: ctx,
       isScrollControlled: true,
       useSafeArea: true,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-      ),
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
       builder: (_) => _RecurringSheet(app: app, existing: existing),
     );
   }
@@ -150,7 +141,7 @@ class _RecurringCard extends StatelessWidget {
                   width: 48,
                   height: 48,
                   decoration: BoxDecoration(
-                    color: cs.primary.withValues(alpha: 0.12),
+                    color: cs.primary.withAlpha(30),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Icon(Icons.repeat_rounded, color: cs.primary, size: 28),
@@ -160,13 +151,9 @@ class _RecurringCard extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(r.name,
-                          style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 16)),
+                      Text(r.name, style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 16)),
                       const SizedBox(height: 2),
-                      Text(
-                        r.frequencyLabel,
-                        style: TextStyle(fontSize: 12, color: cs.onSurface.withValues(alpha: 0.6)),
-                      ),
+                      Text(r.frequencyLabel, style: TextStyle(fontSize: 12, color: cs.onSurface.withAlpha(150))),
                     ],
                   ),
                 ),
@@ -175,18 +162,11 @@ class _RecurringCard extends StatelessWidget {
                   children: [
                     Text(
                       formatAmount(r.amount, currency),
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w800,
-                        color: r.type == 'expense' ? cs.primary : const Color(0xFF2E7D32),
-                      ),
+                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: cs.primary),
                     ),
                     const SizedBox(height: 2),
                     if (r.endDate != null)
-                      Text(
-                        '${r.remainingPayments ?? 0} left',
-                        style: TextStyle(fontSize: 10, color: cs.onSurface.withValues(alpha: 0.5)),
-                      ),
+                      Text('${r.remainingPayments ?? 0} left', style: TextStyle(fontSize: 10, color: cs.onSurface.withAlpha(130))),
                   ],
                 ),
               ],
@@ -196,12 +176,10 @@ class _RecurringCard extends StatelessWidget {
               children: [
                 Expanded(
                   child: OutlinedButton.icon(
-                    onPressed: () => _showSheet(context, app, existing: r),
+                    onPressed: () => RecurringScreen._showSheet(context, app, existing: r),
                     icon: const Icon(Icons.edit_outlined, size: 18),
                     label: const Text('Edit'),
-                    style: OutlinedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(vertical: 8),
-                    ),
+                    style: OutlinedButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 8)),
                   ),
                 ),
                 const SizedBox(width: 8),
@@ -209,9 +187,7 @@ class _RecurringCard extends StatelessWidget {
                   child: FilledButton.icon(
                     onPressed: () async {
                       final ok = await showDeleteConfirm(context, r.name);
-                      if (ok && context.mounted) {
-                        app.deleteRecurring(r.id);
-                      }
+                      if (ok && context.mounted) app.deleteRecurring(r.id);
                     },
                     icon: const Icon(Icons.delete_outline, size: 18),
                     label: const Text('Delete'),
@@ -230,7 +206,6 @@ class _RecurringCard extends StatelessWidget {
   }
 }
 
-// ─── Add / Edit Recurring Sheet ──────────────────────────────────────────
 class _RecurringSheet extends StatefulWidget {
   final AppProvider app;
   final RecurringPayment? existing;
@@ -279,11 +254,7 @@ class _RecurringSheetState extends State<_RecurringSheet> {
   }
 
   Future<void> _submit() async {
-    if (_nameCtrl.text.trim().isEmpty ||
-        _amountCtrl.text.isEmpty ||
-        _accountId == null ||
-        _categoryId == null) return;
-
+    if (_nameCtrl.text.trim().isEmpty || _amountCtrl.text.isEmpty || _accountId == null || _categoryId == null) return;
     final amount = double.tryParse(_amountCtrl.text) ?? 0;
     final app = widget.app;
     final now = DateTime.now();
@@ -333,83 +304,39 @@ class _RecurringSheetState extends State<_RecurringSheet> {
     final cs = Theme.of(context).colorScheme;
 
     return Padding(
-      padding: EdgeInsets.only(
-        bottom: MediaQuery.of(context).viewInsets.bottom + 16,
-        left: 20,
-        right: 20,
-        top: 20,
-      ),
+      padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom + 16, left: 20, right: 20, top: 20),
       child: SingleChildScrollView(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              isEdit ? 'Edit Recurring Payment' : 'Add Recurring Payment',
-              style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w800),
-            ),
+            Text(isEdit ? 'Edit Recurring Payment' : 'Add Recurring Payment', style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w800)),
             const SizedBox(height: 20),
-            TextField(
-              controller: _nameCtrl,
-              decoration: const InputDecoration(
-                labelText: 'Name (e.g., Netflix, Rent)',
-                prefixIcon: Icon(Icons.label_outline),
-              ),
-              autofocus: true,
-            ),
+            TextField(controller: _nameCtrl, decoration: const InputDecoration(labelText: 'Name (e.g., Netflix, Rent)', prefixIcon: Icon(Icons.label_outline)), autofocus: true),
             const SizedBox(height: 14),
-            TextField(
-              controller: _amountCtrl,
-              keyboardType: const TextInputType.numberWithOptions(decimal: true),
-              decoration: const InputDecoration(
-                labelText: 'Amount',
-                prefixIcon: Icon(Icons.attach_money),
-              ),
-            ),
+            TextField(controller: _amountCtrl, keyboardType: const TextInputType.numberWithOptions(decimal: true), decoration: const InputDecoration(labelText: 'Amount', prefixIcon: Icon(Icons.attach_money))),
             const SizedBox(height: 14),
-            // Account dropdown
             DropdownButtonFormField<String>(
               value: _accountId,
-              decoration: const InputDecoration(
-                labelText: 'Account',
-                prefixIcon: Icon(Icons.account_balance_wallet_outlined),
-              ),
-              items: _accounts.map((acc) {
-                return DropdownMenuItem<String>(
-                  value: acc.id,
-                  child: Text(acc.name),
-                );
-              }).toList(),
+              decoration: const InputDecoration(labelText: 'Account', prefixIcon: Icon(Icons.account_balance_wallet_outlined)),
+              items: _accounts.map((acc) => DropdownMenuItem(value: acc.id, child: Text(acc.name))).toList(),
               onChanged: (v) => setState(() => _accountId = v),
             ),
             const SizedBox(height: 14),
-            // Category dropdown
             DropdownButtonFormField<String>(
               value: _categoryId,
-              decoration: const InputDecoration(
-                labelText: 'Category',
-                prefixIcon: Icon(Icons.category_outlined),
-              ),
-              items: _categories.map((cat) {
-                return DropdownMenuItem<String>(
-                  value: cat.id,
-                  child: Text(cat.name),
-                );
-              }).toList(),
+              decoration: const InputDecoration(labelText: 'Category', prefixIcon: Icon(Icons.category_outlined)),
+              items: _categories.map((cat) => DropdownMenuItem(value: cat.id, child: Text(cat.name))).toList(),
               onChanged: (v) => setState(() => _categoryId = v),
             ),
             const SizedBox(height: 14),
-            // Frequency
             Row(
               children: [
                 Expanded(
                   child: TextFormField(
                     initialValue: _freqVal.toString(),
                     keyboardType: TextInputType.number,
-                    decoration: const InputDecoration(
-                      labelText: 'Every',
-                      isDense: true,
-                    ),
+                    decoration: const InputDecoration(labelText: 'Every', isDense: true),
                     onChanged: (v) => setState(() => _freqVal = int.tryParse(v) ?? 1),
                   ),
                 ),
@@ -417,10 +344,7 @@ class _RecurringSheetState extends State<_RecurringSheet> {
                 Expanded(
                   child: DropdownButtonFormField<String>(
                     value: _freqUnit,
-                    decoration: const InputDecoration(
-                      isDense: true,
-                      contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 12),
-                    ),
+                    decoration: const InputDecoration(isDense: true, contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 12)),
                     items: const [
                       DropdownMenuItem(value: 'days', child: Text('Days')),
                       DropdownMenuItem(value: 'weeks', child: Text('Weeks')),
@@ -433,64 +357,37 @@ class _RecurringSheetState extends State<_RecurringSheet> {
               ],
             ),
             const SizedBox(height: 14),
-            // Start date
             ListTile(
               contentPadding: EdgeInsets.zero,
               leading: const Icon(Icons.calendar_today_outlined),
               title: Text('Start: ${DateFormat('dd MMM yyyy').format(_startDate)}'),
               onTap: () async {
-                final picked = await showDatePicker(
-                  context: context,
-                  initialDate: _startDate,
-                  firstDate: DateTime.now(),
-                  lastDate: DateTime.now().add(const Duration(days: 365 * 5)),
-                );
+                final picked = await showDatePicker(context: context, initialDate: _startDate, firstDate: DateTime.now(), lastDate: DateTime.now().add(const Duration(days: 365 * 5)));
                 if (picked != null) setState(() => _startDate = picked);
               },
             ),
-            // End date (optional)
             ListTile(
               contentPadding: EdgeInsets.zero,
               leading: const Icon(Icons.calendar_view_day_outlined),
-              title: Text(_endDate == null
-                  ? 'End: Never'
-                  : 'End: ${DateFormat('dd MMM yyyy').format(_endDate!)}'),
+              title: Text(_endDate == null ? 'End: Never' : 'End: ${DateFormat('dd MMM yyyy').format(_endDate!)}'),
               onTap: () async {
-                final picked = await showDatePicker(
-                  context: context,
-                  initialDate: _endDate ?? _startDate.add(const Duration(days: 365)),
-                  firstDate: _startDate,
-                  lastDate: _startDate.add(const Duration(days: 365 * 10)),
-                );
+                final picked = await showDatePicker(context: context, initialDate: _endDate ?? _startDate.add(const Duration(days: 365)), firstDate: _startDate, lastDate: _startDate.add(const Duration(days: 365 * 10)));
                 setState(() => _endDate = picked);
               },
             ),
             if (_endDate != null)
-              Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  TextButton(
-                    onPressed: () => setState(() => _endDate = null),
-                    child: const Text('Remove end date'),
-                  ),
-                ],
-              ),
+              Row(mainAxisAlignment: MainAxisAlignment.end, children: [TextButton(onPressed: () => setState(() => _endDate = null), child: const Text('Remove end date'))]),
             const SizedBox(height: 14),
             TextField(
-              controller: _notesCtrl = TextEditingController(text: _notes),
+              controller: TextEditingController(text: _notes),
               maxLines: 2,
-              decoration: const InputDecoration(
-                labelText: 'Notes (optional)',
-                prefixIcon: Icon(Icons.sticky_note_2_outlined),
-              ),
+              decoration: const InputDecoration(labelText: 'Notes (optional)', prefixIcon: Icon(Icons.sticky_note_2_outlined)),
+              onChanged: (v) => _notes = v,
             ),
             const SizedBox(height: 20),
             FilledButton(
               onPressed: _submit,
-              style: FilledButton.styleFrom(
-                minimumSize: const Size.fromHeight(50),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28)),
-              ),
+              style: FilledButton.styleFrom(minimumSize: const Size.fromHeight(50), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28))),
               child: Text(isEdit ? 'Save Changes' : 'Add Payment'),
             ),
           ],
@@ -498,6 +395,4 @@ class _RecurringSheetState extends State<_RecurringSheet> {
       ),
     );
   }
-
-  late final TextEditingController _notesCtrl;
 }
