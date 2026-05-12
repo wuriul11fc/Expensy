@@ -6,7 +6,7 @@ import '../providers/app_provider.dart';
 import '../database/db_helper.dart';
 import '../models/models.dart';
 import '../theme/app_theme.dart';
-import '../widgets/shared_widgets.dart'; // ← ADD THIS IMPORT
+import '../widgets/shared_widgets.dart';
 
 class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({super.key});
@@ -87,7 +87,6 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       body: SafeArea(
         child: Column(
           children: [
-            // Progress dots
             Padding(
               padding: const EdgeInsets.fromLTRB(24, 20, 24, 0),
               child: Row(
