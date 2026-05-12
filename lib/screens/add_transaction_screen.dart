@@ -1,3 +1,4 @@
+// lib/screens/add_transaction_screen.dart
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:receipt_recognition/receipt_recognition.dart';
@@ -79,8 +80,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.existing == null ? 'Add Transaction' : 'Edit Transaction',
-            style: const TextStyle(fontWeight: FontWeight.w800)),
+        title: Text(widget.existing == null ? 'Add Transaction' : 'Edit Transaction', style: const TextStyle(fontWeight: FontWeight.w800)),
         backgroundColor: headerColor,
         foregroundColor: Colors.white,
       ),
@@ -95,16 +95,13 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                 ButtonSegment(value: 'income', label: Text('Income'), icon: Icon(Icons.arrow_downward_rounded)),
               ],
               selected: {_type},
-              onSelectionChanged: (s) => setState(() {
-                _type = s.first;
-                _categoryId = null;
-              }),
+              onSelectionChanged: (s) => setState(() { _type = s.first; _categoryId = null; }),
             ),
             const SizedBox(height: 20),
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 8),
               child: Column(children: [
-                Text('Amount', style: TextStyle(fontSize: 12, color: cs.onSurface.withOpacity(0.6))),
+                Text('Amount', style: TextStyle(fontSize: 12, color: cs.onSurface.withAlpha(150))),
                 const SizedBox(height: 4),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -125,10 +122,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
               ]),
             ),
             const SizedBox(height: 16),
-            TextField(
-              controller: _descCtrl,
-              decoration: const InputDecoration(labelText: 'Description', prefixIcon: Icon(Icons.notes_outlined)),
-            ),
+            TextField(controller: _descCtrl, decoration: const InputDecoration(labelText: 'Description', prefixIcon: Icon(Icons.notes_outlined))),
             const SizedBox(height: 14),
             if (app.accounts.isNotEmpty) ...[
               Text('Account', style: Theme.of(context).textTheme.labelMedium?.copyWith(letterSpacing: 1)),
@@ -149,9 +143,9 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                         width: 130,
                         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                         decoration: BoxDecoration(
-                          color: sel ? Color(acc.colorValue) : Color(acc.colorValue).withOpacity(0.10),
+                          color: sel ? Color(acc.colorValue) : Color(acc.colorValue).withAlpha(25),
                           borderRadius: BorderRadius.circular(14),
-                          border: Border.all(color: sel ? Color(acc.colorValue) : Color(acc.colorValue).withOpacity(0.35), width: sel ? 2 : 1),
+                          border: Border.all(color: sel ? Color(acc.colorValue) : Color(acc.colorValue).withAlpha(90), width: sel ? 2 : 1),
                         ),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -159,10 +153,8 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                           children: [
                             AccountTypeIcon(type: acc.type, size: 16, color: sel ? Colors.white : Color(acc.colorValue)),
                             const SizedBox(height: 4),
-                            Text(acc.name, maxLines: 1, overflow: TextOverflow.ellipsis,
-                                style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: sel ? Colors.white : Color(acc.colorValue))),
-                            Text(formatAmount(acc.balance, acc.currency), maxLines: 1, overflow: TextOverflow.ellipsis,
-                                style: TextStyle(fontSize: 10, color: sel ? Colors.white.withOpacity(0.8) : cs.onSurface.withOpacity(0.5))),
+                            Text(acc.name, maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: sel ? Colors.white : Color(acc.colorValue))),
+                            Text(formatAmount(acc.balance, acc.currency), maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 10, color: sel ? Colors.white.withAlpha(200) : cs.onSurface.withAlpha(130))),
                           ],
                         ),
                       ),
@@ -186,7 +178,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                       duration: const Duration(milliseconds: 80),
                       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
                       decoration: BoxDecoration(
-                        color: sel ? Color(c.colorValue) : Color(c.colorValue).withOpacity(0.12),
+                        color: sel ? Color(c.colorValue) : Color(c.colorValue).withAlpha(30),
                         borderRadius: BorderRadius.circular(20),
                       ),
                       child: Row(
@@ -209,30 +201,17 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
               title: Text('${_date.day}/${_date.month}/${_date.year}', style: const TextStyle(fontWeight: FontWeight.w500)),
               subtitle: const Text('Tap to change date'),
               onTap: () async {
-                final picked = await showDatePicker(
-                  context: context,
-                  initialDate: _date,
-                  firstDate: DateTime(2000),
-                  lastDate: DateTime.now().add(const Duration(days: 1)),
-                );
+                final picked = await showDatePicker(context: context, initialDate: _date, firstDate: DateTime(2000), lastDate: DateTime.now().add(const Duration(days: 1)));
                 if (picked != null) setState(() => _date = picked);
               },
             ),
-            TextField(
-              controller: _noteCtrl,
-              maxLines: 2,
-              decoration: const InputDecoration(labelText: 'Note (optional)', prefixIcon: Icon(Icons.sticky_note_2_outlined)),
-            ),
+            TextField(controller: _noteCtrl, maxLines: 2, decoration: const InputDecoration(labelText: 'Note (optional)', prefixIcon: Icon(Icons.sticky_note_2_outlined))),
             const SizedBox(height: 28),
             FilledButton.icon(
               onPressed: _submit,
               icon: Icon(widget.existing == null ? Icons.check_rounded : Icons.save_outlined),
               label: Text(widget.existing == null ? 'Add $_type' : 'Save Changes'),
-              style: FilledButton.styleFrom(
-                minimumSize: const Size.fromHeight(52),
-                backgroundColor: headerColor,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28)),
-              ),
+              style: FilledButton.styleFrom(minimumSize: const Size.fromHeight(52), backgroundColor: headerColor, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28))),
             ),
           ],
         ),
@@ -240,7 +219,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
           try {
-            final receipt = await ReceiptRecognizer().scanReceiptFromCamera();
+            final receipt = await ReceiptRecognizer().processImageFromCamera();
             if (receipt != null && mounted) {
               _amountCtrl.text = receipt.totalAmount?.toString() ?? '';
               if (receipt.date != null) _date = receipt.date!;
@@ -249,7 +228,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
               }
             }
           } catch (e) {
-            // ignore errors - user can still type manually
+            // ignore – user can type manually
           }
         },
         child: const Icon(Icons.receipt),
