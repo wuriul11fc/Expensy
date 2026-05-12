@@ -23,6 +23,7 @@ if (flutterVersionName == null) {
 }
 
 android {
+    namespace = "com.expensy.app"
     compileSdk = 35
     ndkVersion = "27.0.12077973"
 
@@ -40,7 +41,7 @@ android {
     }
 
     defaultConfig {
-        applicationId "com.expensy.app"
+        applicationId = "com.expensy.app"
         minSdk = 21
         targetSdk = 35
         versionCode = flutterVersionCode.toInteger()
@@ -55,5 +56,5 @@ android {
 }
 
 flutter {
-    source '../..'
+    source = "../.."
 }
