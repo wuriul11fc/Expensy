@@ -11,7 +11,7 @@ class AccountsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final app = context.watch<AppProvider>();
+    final app = Provider.of<AppProvider>(context);
     final cs = Theme.of(context).colorScheme;
     final currency = app.settings.currency;
     String fmt(double v) => formatAmount(v, currency);
@@ -319,7 +319,7 @@ class _AccountSheetState extends State<_AccountSheet> {
             ),
             const SizedBox(height: 14),
             DropdownButtonFormField<String>(
-              initialValue: _type,
+              value: _type,
               decoration: const InputDecoration(
                   labelText: 'Account Type',
                   prefixIcon: Icon(Icons.account_balance_outlined)),
